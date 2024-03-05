@@ -1,16 +1,20 @@
 /*
 Battery Testing Script
 ======================
-**author  BrendonP
-**company Excelerate Ltd.
+-- Author:  BrendonP
+-- Company: Excelerate Ltd.
+-- Version: 2.0.0
 
 Program detects when voltage of circuit exceeds final discharge voltage (as conf) and starts timer.
-Once fully depleted again, stops program and time.
+Once fully depleted again, stops program and timer.
 
 Edit constant values to match needs.
-Use putty serial, set up logging functionality, saves all serial output to txt file. 
+Use putty serial, set up logging functionality, saves all serial output to txt file automatically. 
 
-TODO: Remove full date and just do time elapsed - clock_t
+DEPENDENCIES:
+-- Library: Timer
+-- Author:  Stefan Staub
+-- Version: 1.2.1
 */
 #include <stdio.h>
 #include "Timer.h"
@@ -43,7 +47,7 @@ void checkSerial() {
   Serial.println("Checking for power input...");
 }
 
-void checkBattery(){
+void checkBattery() {
   (hasCharge) ? timer.start() : timer.stop();
   while (hasCharge) {
     uint8_t totalSeconds = (timer.read() / 1000) % 60;
@@ -67,9 +71,8 @@ void checkBattery(){
     (startUp) ? firstRead = convertedBatteryVoltage : startUp = false;
     (convertedBatteryVoltage <= finalVoltageAtDischarge) ? hasCharge = false : lastRead = convertedBatteryVoltage;
     startUp = false;
-    delay(5000);
+    delay(10000);
   }
-
   Serial.printf("Battery test is now finished. \nFirst read: %f, Final read: %f", firstRead, lastRead);
   Serial.println("\n-------------Battery dead-------------");
 }
